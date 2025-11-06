@@ -8,23 +8,27 @@ for the Goodreads pipeline.
 
 - `query`  
   The initial connection/query that reads the curated data from the Gold layer
-  (curated_reviews) in Azure Storage / Lakehouse.
+  (curated_reviews) in Azure Storage / Lakehouse
 
 - `curated_reviews`  
   Basic shaping of the main reviews table (selecting columns, simple cleanup,
-  and preparing the data to be enriched with aggregates).
+  and preparing the data to be enriched with aggregates)
 
 - `BookAggregates`  
   Power Query logic that groups by `book_id` and computes book-level features,
-  such as the average rating per book and number of reviews per book.
+  such as the average rating per book and number of reviews per book
+
+- `BookTextStats`
+  Groups by book_id and calculates text-based statistics such as avg_review_length_book, max_review_length_book,
+  and min_review_length_book based on the review text length
 
 - `AuthorAggregates`  
   Power Query logic that groups by `author_name` and computes author-level
-  features, such as the average rating per author and number of reviews per author.
+  features, such as the average rating per author and number of reviews per author
 
 - `final_curated_reviews`  
   The final enriched dataset where all aggregations are merged back into the
-  main curated_reviews table.
+  main curated_reviews table
 
 NOTE:
 Because the UDST Fabric tenant has reached the maximum number of trial capacities,
