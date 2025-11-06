@@ -34,7 +34,7 @@ re-executed later once Fabric capacity is available.
 
 
 
-for HomeWork 2 these where the steps :
+### HomeWork 2 steps :
 
 a. Adjust Data Types:
 review_id: Text
@@ -66,11 +66,9 @@ Select date_added then Date filters then Before : 2025-11-06
 Replace missing values:
 n_votes Select then Replace Values then Replace null with 0
 language: Select then Replace Values then Replace null with "Unknown"
+Repeat for other columns drop nulls in review_id, user_id
 
 
-
-
+### summarize of lab3  
 In this lab, we built a full data preprocessing pipeline using Azure Data Lake, Data Factory, Databricks, and Fabric. We uploaded the Goodreads datasets to the raw layer, transformed them to Parquet in the processed layer using ADF, and used Azure Databricks (Spark) to clean and join books, authors, and reviews into the curated_reviews table. Then, in Fabric Dataflow, we used Power Query (M-code) to create book and author aggregates and merged them into final_curated_reviews. Finally, we cleaned and standardized the data in Databricks (removed duplicates, fixed types, normalized text) and saved the final dataset to the Gold layer (/gold/features_v1/) for analysis and machine learning.
 
-
-Repeat for other columns (e.g., drop nulls in review_id, user_id for integrity).
