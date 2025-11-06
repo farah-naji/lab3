@@ -1,0 +1,36 @@
+let
+Source = AzureStorage.DataLake(
+"https://goodreadsreviews60104384.dfs.core.windows.net/lakehouse/gold/curated_reviews/",
+[HierarchicalNavigation=true]
+),
+DeltaTable = DeltaLake.Table(Source),
+  #"Changed column type" = Table.TransformColumnTypes(DeltaTable, {{"date_added", type date}, {"review_id", type text}, {"book_id", type text}, {"title", type text}, {"author_id", type text}, {"author_name", type text}, {"rating", Int64.Type}, {"language", type text}, {"n_votes", Int64.Type}, {"user_id", type text}}),
+  #"Removed blank rows" = Table.SelectRows(#"Changed column type", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 1" = Table.SelectRows(#"Removed blank rows", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 2" = Table.SelectRows(#"Removed blank rows 1", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 3" = Table.SelectRows(#"Removed blank rows 2", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 4" = Table.SelectRows(#"Removed blank rows 3", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 5" = Table.SelectRows(#"Removed blank rows 4", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 6" = Table.SelectRows(#"Removed blank rows 5", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 7" = Table.SelectRows(#"Removed blank rows 6", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 8" = Table.SelectRows(#"Removed blank rows 7", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 9" = Table.SelectRows(#"Removed blank rows 8", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Removed blank rows 10" = Table.SelectRows(#"Removed blank rows 9", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+  #"Inserted text length" = Table.AddColumn(#"Removed blank rows 10", "Length", each Text.Length([review_text]), type nullable number),
+  #"Renamed columns" = Table.RenameColumns(#"Inserted text length", {{"Length", "review_length"}}),
+  #"Filtered rows" = Table.SelectRows(#"Renamed columns", each [review_length] >= 10),
+  #"Filtered rows 1" = Table.SelectRows(#"Filtered rows", each [date_added] < #date(2025, 11, 6)),
+  #"Replaced value" = Table.ReplaceValue(#"Filtered rows 1", null, 0, Replacer.ReplaceValue, {"n_votes"}),
+  #"Replaced value 1" = Table.ReplaceValue(#"Replaced value", null, "Unknown", Replacer.ReplaceValue, {"language"}),
+  #"Replaced value 2" = Table.ReplaceValue(#"Replaced value 1", null, "0", Replacer.ReplaceValue, {"review_id"}),
+  #"Replaced value 3" = Table.ReplaceValue(#"Replaced value 2", null, "0", Replacer.ReplaceValue, {"user_id"}),
+  #"Replaced value 4" = Table.ReplaceValue(#"Replaced value 3", "0", null, Replacer.ReplaceValue, {"user_id"}),
+  #"Replaced value 5" = Table.ReplaceValue(#"Replaced value 4", "0", null, Replacer.ReplaceValue, {"review_id"}),
+  #"Trimmed text" = Table.TransformColumns(#"Replaced value 5", {{"title", each Text.Trim(_), type nullable text}}),
+  #"Capitalized each word" = Table.TransformColumns(#"Trimmed text", {{"title", each Text.Proper(_), type nullable text}}),
+  #"Trimmed text 1" = Table.TransformColumns(#"Capitalized each word", {{"author_name", each Text.Trim(_), type nullable text}}),
+  #"Capitalized each word 1" = Table.TransformColumns(#"Trimmed text 1", {{"author_name", each Text.Proper(_), type nullable text}}),
+  #"Trimmed text 2" = Table.TransformColumns(#"Capitalized each word 1", {{"review_text", each Text.Trim(_), type nullable text}}),
+  #"Changed column type 1" = Table.TransformColumnTypes(#"Trimmed text 2", {{"review_length", Int64.Type}})
+in
+#"Changed column type 1"

@@ -1,0 +1,9 @@
+let
+  Source = Table.NestedJoin(curated_reviews, {"book_id"}, BookAggregates, {"book_id"}, "BookAggregates", JoinKind.LeftOuter),
+  #"Merged queries" = Table.NestedJoin(Source, {"author_name"}, AuthorAggregates, {"author_name"}, "AuthorAggregates", JoinKind.LeftOuter),
+  #"Expanded BookAggregates" = Table.ExpandTableColumn(#"Merged queries", "BookAggregates", {"avg_rating_book", "review_count_book"}, {"avg_rating_book", "review_count_book"}),
+  #"Expanded AuthorAggregates" = Table.ExpandTableColumn(#"Expanded BookAggregates", "AuthorAggregates", {"avg_rating_author", "review_count_author"}, {"avg_rating_author", "review_count_author"}),
+  #"Merged queries 1" = Table.NestedJoin(#"Expanded AuthorAggregates", {"book_id"}, BookTextStats, {"book_id"}, "BookTextStats", JoinKind.LeftOuter),
+  #"Expanded BookTextStats" = Table.ExpandTableColumn(#"Merged queries 1", "BookTextStats", {"avg_review_length_book", "max_review_length_book", "min_review_length_book"}, {"avg_review_length_book", "max_review_length_book", "min_review_length_book"})
+in
+  #"Expanded BookTextStats"
