@@ -1,0 +1,6 @@
+let
+  Source = curated_reviews,
+  #"Kept top rows" = Table.FirstN(Source, 10000),
+  #"Grouped rows" = Table.Group(#"Kept top rows", {"book_id"}, {{"avg_review_length_book", each List.Average([review_length]), type nullable number}, {"max_review_length_book", each List.Max([review_length]), type nullable Int64.Type}, {"min_review_length_book", each List.Min([review_length]), type nullable Int64.Type}})
+in
+  #"Grouped rows"
