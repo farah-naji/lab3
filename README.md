@@ -76,3 +76,51 @@ Repeat for other columns drop nulls in review_id, user_id
 ### summarize of lab3  
 In this lab, we built a full data preprocessing pipeline using Azure Data Lake, Data Factory, Databricks, and Fabric. We uploaded the Goodreads datasets to the raw layer, transformed them to Parquet in the processed layer using ADF, and used Azure Databricks (Spark) to clean and join books, authors, and reviews into the curated_reviews table. Then, in Fabric Dataflow, we used Power Query (M-code) to create book and author aggregates and merged them into final_curated_reviews. Finally, we cleaned and standardized the data in Databricks (removed duplicates, fixed types, normalized text) and saved the final dataset to the Gold layer (/gold/features_v1/) for analysis and machine learning.
 
+
+
+### lab 4
+
+
+## III.4a — Added Basic Text Features
+
+- Loaded review_text and applied preprocessing (lowercasing, cleaning).
+- Implemented review_length_words using split() to count total words.
+- Implemented review_length_chars using len() to measure characters.
+- Added both features back into the Spark/Pandas DataFrame.
+- III.4b — Added Sentiment Features (VADER)
+- Imported and initialized SentimentIntensityAnalyzer from NLTK.
+- Generated four sentiment metrics:
+• sentiment_pos
+• sentiment_neg
+• sentiment_neu
+• sentiment_compound
+- Applied the analyzer row-by-row on the cleaned review text
+- Added extracted sentiment scores to the DataFrame.
+
+## III.4c — Added TF-IDF Features
+- Imported TfidfVectorizer from scikit-learn.
+- Used recommended settings:
+• stop_words='english'
+• ngram_range=(1,2)
+• max_features=500
+- Fit and transformed training data only, then applied on validation/test.
+- Flattened generated TF-IDF vectors into columns: tfidf_0 … tfidf_499.
+- Merged TF-IDF features into the main dataset.
+- III.4d — Added Semantic Embedding Features (BERT)
+- Loaded a transformer model (DistilBERT / BERT / Sentence-BERT).
+- Tokenized review text and generated dense embeddings (384-dimensional).
+- Flattened embeddings into columns: bert_emb_0 … bert_emb_383.
+- Appended embeddings to the feature dataset.
+- 
+## III.4e — Combined & Finalized All Features
+Concatenated:
+* basic features
+* sentiment features
+* TF-IDF vectors
+* BERT embeddings
+
+- Kept metadata columns (review_id, book_id, rating).
+- Ensured column naming consistency and valid types.
+
+
+### Note : Due to the account limits, the system could not handle the size of the dataset when saving the Lab 4 training data. After many attempts using different techniques and technical approaches, the saving process still did not succeed in the end.
